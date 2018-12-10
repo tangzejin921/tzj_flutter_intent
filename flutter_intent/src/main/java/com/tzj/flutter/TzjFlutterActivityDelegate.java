@@ -6,9 +6,9 @@ package com.tzj.flutter;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
@@ -25,6 +25,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
+
+import io.flutter.app.FlutterActivityDelegate;
+import io.flutter.app.FlutterActivityEvents;
+import io.flutter.app.FlutterApplication;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformPlugin;
 import io.flutter.util.Preconditions;
@@ -36,11 +40,12 @@ import io.flutter.view.FlutterView;
 import java.util.ArrayList;
 
 /**
+ * 改动至 70a1106
  * Class that performs the actual work of tying Android {@link Activity}
  * instances to Flutter.
  *
  * <p>This exists as a dedicated class (as opposed to being integrated directly
- * into {@link FlutterActivity}) to facilitate applications that don't wish
+ * into {@link TzjFlutterActivity}) to facilitate applications that don't wish
  * to subclass {@code FlutterActivity}. The most obvious example of when this
  * may come in handy is if an application wishes to subclass the Android v4
  * support library's {@code FragmentActivity}.</p>
@@ -52,7 +57,7 @@ import java.util.ArrayList;
  * {@link PluginRegistry} and/or {@link io.flutter.view.FlutterView.Provider}
  * and forward those methods to this class as well.</p>
  */
-public final class FlutterActivityDelegate
+public final class TzjFlutterActivityDelegate
         implements FlutterActivityEvents,
         FlutterView.Provider,
         PluginRegistry {
@@ -61,38 +66,38 @@ public final class FlutterActivityDelegate
     private static final LayoutParams matchParent =
             new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 
-    /**
-     * Specifies the mechanism by which Flutter views are created during the
-     * operation of a {@code FlutterActivityDelegate}.
-     *
-     * <p>A delegate's view factory will be consulted during
-     * {@link #onCreate(Bundle)}. If it returns {@code null}, then the delegate
-     * will fall back to instantiating a new full-screen {@code FlutterView}.</p>
-     *
-     * <p>A delegate's native view factory will be consulted during
-     * {@link #onCreate(Bundle)}. If it returns {@code null}, then the delegate
-     * will fall back to instantiating a new {@code FlutterNativeView}. This is
-     * useful for applications to override to reuse the FlutterNativeView held
-     * e.g. by a pre-existing background service.</p>
-     */
-    public interface ViewFactory {
-        FlutterView createFlutterView(Context context);
-        FlutterNativeView createFlutterNativeView();
-
-        /**
-         * Hook for subclasses to indicate that the {@code FlutterNativeView}
-         * returned by {@link #createFlutterNativeView()} should not be destroyed
-         * when this activity is destroyed.
-         */
-        boolean retainFlutterNativeView();
-    }
+//    /**
+//     * Specifies the mechanism by which Flutter views are created during the
+//     * operation of a {@code FlutterActivityDelegate}.
+//     *
+//     * <p>A delegate's view factory will be consulted during
+//     * {@link #onCreate(Bundle)}. If it returns {@code null}, then the delegate
+//     * will fall back to instantiating a new full-screen {@code FlutterView}.</p>
+//     *
+//     * <p>A delegate's native view factory will be consulted during
+//     * {@link #onCreate(Bundle)}. If it returns {@code null}, then the delegate
+//     * will fall back to instantiating a new {@code FlutterNativeView}. This is
+//     * useful for applications to override to reuse the FlutterNativeView held
+//     * e.g. by a pre-existing background service.</p>
+//     */
+//    public interface ViewFactory {
+//        FlutterView createFlutterView(Context context);
+//        FlutterNativeView createFlutterNativeView();
+//
+//        /**
+//         * Hook for subclasses to indicate that the {@code FlutterNativeView}
+//         * returned by {@link #createFlutterNativeView()} should not be destroyed
+//         * when this activity is destroyed.
+//         */
+//        boolean retainFlutterNativeView();
+//    }
 
     private final Activity activity;
-    private final ViewFactory viewFactory;
+    private final FlutterActivityDelegate.ViewFactory viewFactory;
     private FlutterView flutterView;
     private View launchView;
 
-    public FlutterActivityDelegate(Activity activity, ViewFactory viewFactory) {
+    public TzjFlutterActivityDelegate(Activity activity, FlutterActivityDelegate.ViewFactory viewFactory) {
         this.activity = Preconditions.checkNotNull(activity);
         this.viewFactory = Preconditions.checkNotNull(viewFactory);
     }
@@ -327,10 +332,14 @@ public final class FlutterActivityDelegate
         if (Intent.ACTION_RUN.equals(action)) {
             String route = intent.getStringExtra("route");
             String appBundlePath = intent.getDataString();
+            String entrypoint = intent.getStringExtra("entrypoint");
             if (appBundlePath == null) {
                 // Fall back to the installation path if no bundle path
                 // was specified.
                 appBundlePath = FlutterMain.findAppBundlePath(activity.getApplicationContext());
+            }
+            if (entrypoint == null){
+                entrypoint = "main";
             }
             if (route != null) {
                 flutterView.setInitialRoute(route);
@@ -338,7 +347,7 @@ public final class FlutterActivityDelegate
             if (!flutterView.getFlutterNativeView().isApplicationRunning()) {
                 FlutterRunArguments args = new FlutterRunArguments();
                 args.bundlePath = appBundlePath;
-                args.entrypoint = "main";
+                args.entrypoint = entrypoint;
                 flutterView.runFromBundle(args);
             }
             return true;
@@ -400,6 +409,7 @@ public final class FlutterActivityDelegate
      * Let the user specify whether the activity's {@code windowBackground} is a launch screen
      * and should be shown until the first frame via a <meta-data> tag in the activity.
      */
+    @SuppressLint("WrongConstant")
     private Boolean showSplashScreenUntilFirstFrame() {
         try {
             ActivityInfo activityInfo = activity.getPackageManager().getActivityInfo(
@@ -430,7 +440,7 @@ public final class FlutterActivityDelegate
         flutterView.addFirstFrameListener(new FlutterView.FirstFrameListener() {
             @Override
             public void onFirstFrame() {
-                FlutterActivityDelegate.this.launchView.animate()
+                TzjFlutterActivityDelegate.this.launchView.animate()
                         .alpha(0f)
                         // Use Android's default animation duration.
                         .setListener(new AnimatorListenerAdapter() {
@@ -438,13 +448,13 @@ public final class FlutterActivityDelegate
                             public void onAnimationEnd(Animator animation) {
                                 // Views added to an Activity's addContentView is always added to its
                                 // root FrameLayout.
-                                ((ViewGroup) FlutterActivityDelegate.this.launchView.getParent())
-                                        .removeView(FlutterActivityDelegate.this.launchView);
-                                FlutterActivityDelegate.this.launchView = null;
+                                ((ViewGroup) TzjFlutterActivityDelegate.this.launchView.getParent())
+                                        .removeView(TzjFlutterActivityDelegate.this.launchView);
+                                TzjFlutterActivityDelegate.this.launchView = null;
                             }
                         });
 
-                FlutterActivityDelegate.this.flutterView.removeFirstFrameListener(this);
+                TzjFlutterActivityDelegate.this.flutterView.removeFirstFrameListener(this);
             }
         });
 

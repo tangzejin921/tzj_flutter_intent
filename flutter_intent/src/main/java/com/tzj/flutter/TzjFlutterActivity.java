@@ -10,15 +10,17 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import io.flutter.app.FlutterActivityDelegate.ViewFactory;
+import io.flutter.app.FlutterActivityEvents;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.view.FlutterNativeView;
 import io.flutter.view.FlutterView;
 
 /**
+ * 改动至 70a1106
  * Base class for activities that use Flutter.
  */
-public class FlutterActivity extends Activity implements FlutterView.Provider, PluginRegistry, ViewFactory {
-    private final FlutterActivityDelegate delegate = new FlutterActivityDelegate(this, this);
+public class TzjFlutterActivity extends Activity implements FlutterView.Provider, PluginRegistry, ViewFactory {
+    private final TzjFlutterActivityDelegate delegate = new TzjFlutterActivityDelegate(this, this);
 
     // These aliases ensure that the methods we forward to the delegate adhere
     // to relevant interfaces versus just existing in FlutterActivityDelegate.
