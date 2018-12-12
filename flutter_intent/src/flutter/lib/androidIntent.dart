@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 class AndroidIntent {
+  static const String ACTIVITY = "com.tzj.flutter.FlutterMainActivity";
   static const String ACTION_RUN = "android.intent.action.RUN";
 
   static const int FLAG_ACTIVITY_NO_HISTORY = 0x40000000;
