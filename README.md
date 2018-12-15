@@ -1,4 +1,4 @@
-# flutter_intent
+# tzj_flutter_intent
 **只支持 android**
 > 代码改至:<br>
 [android_intent 0.2.1](https://github.com/flutter/plugins/tree/master/packages)<br>
@@ -35,8 +35,8 @@
     dev_dependencies:
       android_intent:
         git:
-          url: git://github.com/tzjandroid/flutter_intent.git
-          path: flutter_intent/src/flutter
+          url: git://github.com/tzjandroid/tzj_flutter_intent.git
+          path: tzj_flutter_intent/src/flutter
     ```
 - android 工程下的 settings.gradle 中改为如下
     ```Gradle

@@ -21,7 +21,7 @@ allprojects {
         jcenter()
     }
 }
-rootProject.extensions.add("flutter_intent",Type.isFlutterPlugin.name())
+rootProject.extensions.add("tzj_flutter_intent",Type.isFlutterPlugin.name())
 enum Type{
     isAPP,
     isModule,
