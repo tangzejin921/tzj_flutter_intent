@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:android_intent/AndroidIntent.dart';
+import 'package:android_intent/android_intent.dart';
 import './permissionsView.dart';
 
 void main() => runApp(new MyApp());

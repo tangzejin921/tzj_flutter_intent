@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:android_intent/AndroidIntent.dart';
+import 'package:android_intent/android_intent.dart';
 
 class PermissionsButton extends StatefulWidget {
   final String permission;

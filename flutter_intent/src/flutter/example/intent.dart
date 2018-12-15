@@ -1,4 +1,4 @@
-import 'package:android_intent/androidIntent.dart';
+import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
 
 void main(){
