@@ -1,5 +1,3 @@
-import java.lang.reflect.Field
-
 if (rootProject.getExtensions().findByName(getName())==null){
     ext.set("moduleType",Type.isModule.name())
 }else{
