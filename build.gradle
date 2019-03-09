@@ -4,8 +4,9 @@ buildscript {
     
     repositories {
         google()
-        jcenter(
-)    }
+        jcenter()
+        maven { url "https://maven.aliyun.com/nexus/content/repositories/releases/"}
+    }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.1.4'
         
@@ -19,6 +20,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {url 'https://www.jitpack.io'}
+        maven { url "https://maven.aliyun.com/nexus/content/repositories/releases/"}
     }
 }
 rootProject.extensions.add("tzj_flutter_intent",Type.isFlutterPlugin.name())
